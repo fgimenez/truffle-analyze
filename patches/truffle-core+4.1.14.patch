@@ -211,7 +211,7 @@ index 0000000..e9a0aa4
 +
 +module.exports = command;
 diff --git a/node_modules/truffle-core/lib/commands/index.js b/node_modules/truffle-core/lib/commands/index.js
-index 01ddb42..3a7ec84 100644
+index 01ddb42..3084e93 100644
 --- a/node_modules/truffle-core/lib/commands/index.js
 +++ b/node_modules/truffle-core/lib/commands/index.js
 @@ -5,6 +5,7 @@ module.exports = {
@@ -223,7 +223,7 @@ index 01ddb42..3a7ec84 100644
    opcode: require("./opcode"),
    console: require("./console"),
 diff --git a/node_modules/truffle-core/package.json b/node_modules/truffle-core/package.json
-index a7e47be..7b65f31 100644
+index d770061..7b65f31 100644
 --- a/node_modules/truffle-core/package.json
 +++ b/node_modules/truffle-core/package.json
 @@ -62,7 +62,9 @@
