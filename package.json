@@ -1,8 +1,11 @@
 {
   "name": "truffle-analyze",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Adds analyze command to truffle-core",
   "main": "index.js",
+  "bin": {
+    "truffle-analyze": "./node_modules/truffle-core/cli.js"
+  },
   "scripts": {
     "postinstall": "patch-package",
     "test": "echo \"no test specified\""

@@ -222,33 +222,3 @@ index 01ddb42..3084e93 100644
    debug: require("./debug"),
    opcode: require("./opcode"),
    console: require("./console"),
-diff --git a/node_modules/truffle-core/package.json b/node_modules/truffle-core/package.json
-index d770061..7b65f31 100644
---- a/node_modules/truffle-core/package.json
-+++ b/node_modules/truffle-core/package.json
-@@ -62,7 +62,9 @@
-   "bugs": {
-     "url": "https://github.com/ConsenSys/truffle/issues"
-   },
-+  "bundleDependencies": false,
-   "dependencies": {
-+    "armlet": "^0.1.8",
-     "async": "2.6.1",
-     "chai": "4.1.2",
-     "chokidar": "^1.4.2",
-@@ -83,6 +85,7 @@
-     "node-emoji": "^1.8.1",
-     "node-ipc": "^9.1.1",
-     "original-require": "1.0.1",
-+    "remix-lib": "^0.3.0",
-     "safe-eval": "^0.3.0",
-     "serve-static": "^1.10.0",
-     "source-map-support": "^0.5.3",
-@@ -110,6 +113,7 @@
-     "web3": "0.20.6",
-     "yargs": "^8.0.2"
-   },
-+  "deprecated": false,
-   "description": "Core code for Truffle command line tool",
-   "devDependencies": {
-     "ipfsd-ctl": "^0.21.0",
