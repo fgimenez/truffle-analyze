@@ -1,20 +1,19 @@
 {
   "name": "truffle-analyze",
-  "version": "0.2.0",
-  "description": "",
+  "version": "0.2.1",
+  "description": "Adds analyze command to truffle-core",
   "main": "index.js",
   "scripts": {
     "postinstall": "patch-package",
     "test": "echo \"no test specified\""
   },
   "author": "Federico Gimenez <federico.gimenez@consensys.net>",
-  "license": "ISC",
+  "license": "MIT",
+  "repository": "https://github.com/fgimenez/truffle-analyze.git",
   "dependencies": {
     "armlet": "^0.1.8",
+    "patch-package": "^5.1.1",
     "remix-lib": "^0.3.8",
     "truffle-core": "^4.1.14"
-  },
-  "devDependencies": {
-    "patch-package": "^5.1.1"
   }
 }
