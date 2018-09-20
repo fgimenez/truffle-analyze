@@ -1,6 +1,6 @@
 {
   "name": "truffle-analyze",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Adds analyze command to truffle-core",
   "main": "index.js",
   "scripts": {
@@ -13,9 +13,7 @@
   "dependencies": {
     "armlet": "^0.1.8",
     "remix-lib": "^0.3.8",
+    "patch-package": "^6.0.0-9",
     "truffle-core": "^4.1.14"
-  },
-  "devDependencies": {
-    "patch-package": "^6.0.0-9"
   }
 }
