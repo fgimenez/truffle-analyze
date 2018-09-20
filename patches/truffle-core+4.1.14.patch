@@ -1,0 +1,215 @@
+patch-package
+new file mode 100644
+--- /dev/null
++++ b/node_modules/truffle-core/lib/analyze/main.js
+@@ -0,0 +1,82 @@
++const path = require('path')
++const fs = require('fs')
++const armlet = require('armlet')
++const trufstuf = require('./trufstuf');
++const srcmap = require('./srcmap.js')
++
++function CommandBuilder(command) {
++  this.command = command;
++};
++
++var Analyze = {
++  analyze: function(options, callback) {
++    console.log("analyze called")
++    // console.log(require('util').inspect(options));
++    const root_dir = options.working_directory
++    const buildDir = trufstuf.getBuildContractsDir(root_dir)
++    const contractsDir = trufstuf.getContractsDir(root_dir)
++    console.log(`Truffle project root: ${root_dir}`)
++    console.log(`Build directory is: ${buildDir}`)
++    console.log(`Contracts directory is: ${contractsDir}`)
++
++    const buildJson = trufstuf.guessTruffleBuildJson(buildDir)
++    const solidityFileBase = path.basename(buildJson, '.json')
++    const solidityFile = path.join(contractsDir, solidityFileBase + '.sol')
++    console.log(`Solidity file is: ${solidityFile}`)
++
++    let buildJsonPath = path.join(buildDir, buildJson)
++    console.log(`Reading ${buildJsonPath}`)
++    let client = new armlet.Client(
++      {
++	apiKey: process.env.MYTHRIL_API_KEY,
++	userEmail: process.env.MYTHRIL_API_KEY || 'bogus@example.com'
++      })
++
++    const buildObj = JSON.parse(fs.readFileSync(buildJsonPath, 'utf8'))
++
++    client.analyze({bytecode: buildObj.deployedBytecode})
++      .then(issues => {
++	exports.parseMythrilOutput(issues, buildObj)
++	// console.log(issues)
++      }).catch(err => {
++	console.log(err)
++      })
++  }
++}
++
++exports.parseMythrilIssue = function (issue) {
++  const fields = ['type', 'contract', 'function', 'code', 'address', 'description']
++  for (let i in fields) {
++    let field = fields[i]
++    if (issue[field]) {
++      console.log(`${field}: ${issue[field]}`)
++    }
++  }
++}
++
++exports.parseMythrilOutput = function (issues, buildObj) {
++  // FIXME: we are using remix for parsing which uses
++  // a different AST format than truffle's JSON.
++  // For now we'll compile the contract.
++
++  let output = srcmap.compileContract(buildObj.source)
++  let ast = output.sources['test.sol']
++  console.log(ast)
++
++  let legacyAST = buildObj.legacyAST
++  console.log(legacyAST)
++
++  let sourceMap = buildObj.deployedSourceMap
++  for (let i in issues) {
++    let issue = issues[i]
++    let node = srcmap.isVariableDeclaration(issue.address, sourceMap, ast)
++    if (node && srcmap.isDynamicArray(node)) {
++      console.log(`skipping issue around dynamic array`)
++    } else {
++      parseMythrilIssue(issue)
++    }
++  }
++}
++
++
++module.exports = Analyze;
+new file mode 100644
+--- /dev/null
++++ b/node_modules/truffle-core/lib/analyze/srcmap.js
+@@ -0,0 +1,26 @@
++'use strict'
++
++var SourceMappingDecoder = require('remix-lib/src/sourceMappingDecoder.js')
++var compilerInput = require('remix-lib/src/helpers/compilerHelper').compilerInput
++var compiler = require('solc')
++
++exports.compileContract = function (contracts) {
++  var output = compiler.compileStandardWrapper(compilerInput(contracts))
++  return JSON.parse(output)
++}
++
++exports.isVariableDeclaration = function (instIndex, sourceMap, ast) {
++  var sourceMappingDecoder = new SourceMappingDecoder()
++  return sourceMappingDecoder.findNodeAtInstructionIndex('VariableDeclaration',
++    instIndex, sourceMap, ast)
++}
++
++exports.isDynamicArray = function (node) {
++  var attrib = node.attributes
++  // FIXME: do we want to check:
++  // constant: false
++  // storageLocation: 'default'
++  return (attrib.stateVariable &&
++  attrib.visibility === 'public' &&
++  node.children && node.children[0].name === 'ArrayTypeName')
++}
+new file mode 100644
+--- /dev/null
++++ b/node_modules/truffle-core/lib/analyze/trufstuf.js
+@@ -0,0 +1,67 @@
++// Truffle related code
++'use strict'
++
++/* FIXME - use truffle libraries:
++
++config = require("truffle-config')  // config.working_directory is truffle root
++cs = require('truffle-contract-sources') , //findContracts() to get all the solidity files
++*/
++
++const fs = require('fs')
++const path = require('path')
++const assert = require('assert')
++
++// Directories that must be in a truffle project
++const TRUFFLE_ROOT_DIRS = ['contracts', 'migrations']
++
++exports.is_truffle_root = function (path) {
++  for (var i in TRUFFLE_ROOT_DIRS) {
++    var dir = `${path}/${TRUFFLE_ROOT_DIRS[i]}`
++    if (!fs.existsSync(dir)) {
++      return false
++    }
++    var stat = fs.statSync(dir)
++    if (!stat || !stat.isDirectory()) {
++      return false
++    }
++  }
++  return true
++}
++
++exports.getBuildContractsDir = function (path) {
++  assert(exports.is_truffle_root(path))
++  return `${path}/build/contracts`
++}
++exports.getContractsDir = function (path) {
++  assert(exports.is_truffle_root(path))
++  return `${path}/contracts`
++}
++
++exports.get_truffle_build_json_files = function (directory) {
++  var files = fs.readdirSync(directory)
++  var result = []
++  for (var i in files) {
++    if (path.extname(files[i]) === '.json' && path.basename(files[i])[0] !== '.') {
++      result.push(files[i])
++    }
++  }
++  return result
++}
++
++exports.guessTruffleBuildJson = function (directory) {
++  var jsonPaths = exports.get_truffle_build_json_files(directory)
++  var jsonPathsFiltered = []
++  for (var i in jsonPaths) {
++    if ((path.basename(jsonPaths[i]) !== 'Migrations.json') &&
++    (path.basename(jsonPaths[i]) !== 'mythril.json')) {
++      jsonPathsFiltered.push(jsonPaths[i])
++    }
++  }
++  let jsonPath
++  if (jsonPathsFiltered.length >= 1) {
++    jsonPath = jsonPathsFiltered[0]
++  } else {
++    jsonPath = jsonPaths[0]
++  }
++  return jsonPath
++}
+new file mode 100644
+--- /dev/null
++++ b/node_modules/truffle-core/lib/commands/analyze.js
+@@ -0,0 +1,13 @@
++const command = {
++  command: 'analyze',
++  description: 'Run Mythril Platform API analysis',
++  builder: {},
++  run: function (options, done) {
++    const Config = require("truffle-config");
++    const Analyze = require("../analyze/main");
++    const config = Config.detect(options);
++    Analyze.analyze(config, done);
++  }
++}
++
++module.exports = command;
+--- a/node_modules/truffle-core/lib/commands/index.js
++++ b/node_modules/truffle-core/lib/commands/index.js
+@@ -5,6 +5,7 @@ module.exports = {
+   deploy: require("./deploy"),
+   build: require("./build"),
+   test: require("./test"),
++  analyze: require("./analyze"),
+   debug: require("./debug"),
+   opcode: require("./opcode"),
+   console: require("./console"),
