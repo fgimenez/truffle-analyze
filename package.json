@@ -1,0 +1,18 @@
+{
+  "name": "truffle-analyze",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "patch-package",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Federico Gimenez <federico.gimenez@consensys.net>",
+  "license": "ISC",
+  "dependencies": {
+    "truffle": "^4.1.14"
+  },
+  "devDependencies": {
+    "patch-package": "^5.1.1"
+  }
+}
