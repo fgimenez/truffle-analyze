@@ -12,8 +12,10 @@
   "repository": "https://github.com/fgimenez/truffle-analyze.git",
   "dependencies": {
     "armlet": "^0.1.8",
-    "patch-package": "^6.0.0-9",
     "remix-lib": "^0.3.8",
     "truffle-core": "^4.1.14"
+  },
+  "devDependencies": {
+    "patch-package": "^6.0.0-9"
   }
 }
