@@ -1,5 +1,6 @@
-patch-package
+diff --git a/node_modules/truffle-core/lib/analyze/main.js b/node_modules/truffle-core/lib/analyze/main.js
 new file mode 100644
+index 0000000..b841f78
 --- /dev/null
 +++ b/node_modules/truffle-core/lib/analyze/main.js
 @@ -0,0 +1,82 @@
@@ -85,7 +86,9 @@ new file mode 100644
 +
 +
 +module.exports = Analyze;
+diff --git a/node_modules/truffle-core/lib/analyze/srcmap.js b/node_modules/truffle-core/lib/analyze/srcmap.js
 new file mode 100644
+index 0000000..9c781a5
 --- /dev/null
 +++ b/node_modules/truffle-core/lib/analyze/srcmap.js
 @@ -0,0 +1,26 @@
@@ -115,7 +118,9 @@ new file mode 100644
 +  attrib.visibility === 'public' &&
 +  node.children && node.children[0].name === 'ArrayTypeName')
 +}
+diff --git a/node_modules/truffle-core/lib/analyze/trufstuf.js b/node_modules/truffle-core/lib/analyze/trufstuf.js
 new file mode 100644
+index 0000000..c1d5110
 --- /dev/null
 +++ b/node_modules/truffle-core/lib/analyze/trufstuf.js
 @@ -0,0 +1,67 @@
@@ -186,7 +191,9 @@ new file mode 100644
 +  }
 +  return jsonPath
 +}
+diff --git a/node_modules/truffle-core/lib/commands/analyze.js b/node_modules/truffle-core/lib/commands/analyze.js
 new file mode 100644
+index 0000000..e9a0aa4
 --- /dev/null
 +++ b/node_modules/truffle-core/lib/commands/analyze.js
 @@ -0,0 +1,13 @@
@@ -203,6 +210,8 @@ new file mode 100644
 +}
 +
 +module.exports = command;
+diff --git a/node_modules/truffle-core/lib/commands/index.js b/node_modules/truffle-core/lib/commands/index.js
+index 01ddb42..3a7ec84 100644
 --- a/node_modules/truffle-core/lib/commands/index.js
 +++ b/node_modules/truffle-core/lib/commands/index.js
 @@ -5,6 +5,7 @@ module.exports = {
@@ -213,3 +222,25 @@ new file mode 100644
    debug: require("./debug"),
    opcode: require("./opcode"),
    console: require("./console"),
+diff --git a/node_modules/truffle-core/node_modules/ansi-regex/package.json b/node_modules/truffle-core/node_modules/ansi-regex/package.json
+index 98f2276..637d1ab 100644
+--- a/node_modules/truffle-core/package.json
++++ b/node_modules/truffle-core/package.json
+@@ -62,7 +58,9 @@
+   "bugs": {
+     "url": "https://github.com/ConsenSys/truffle/issues"
+   },
++  "bundleDependencies": false,
+   "dependencies": {
++    "armlet": "^0.1.8",
+     "async": "2.6.1",
+     "chai": "4.1.2",
+     "chokidar": "^1.4.2",
+@@ -83,6 +81,7 @@
+     "node-emoji": "^1.8.1",
+     "node-ipc": "^9.1.1",
+     "original-require": "1.0.1",
++    "remix-lib": "^0.3.0",
+     "safe-eval": "^0.3.0",
+     "serve-static": "^1.10.0",
+     "source-map-support": "^0.5.3",
