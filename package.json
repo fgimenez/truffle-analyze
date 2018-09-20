@@ -1,6 +1,6 @@
 {
   "name": "truffle-analyze",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Adds analyze command to truffle-core",
   "main": "index.js",
   "scripts": {
